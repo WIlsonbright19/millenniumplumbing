@@ -19,7 +19,9 @@ npm run build
 
 Deploy the generated `dist/` directory to any static web host. Configure the host to serve `index.html` for routes that do not match a file so client-side navigation works. Netlify and Vercel fallback rules are included; other hosts can use their equivalent rewrite or fallback setting.
 
-The service request forms currently do not send data to a business inbox or booking system. They display the entered details and direct visitors to call. Connect and test a form provider before relying on online submissions.
+## Service requests
+
+The service request form currently runs in demo mode: submitting valid fields shows an on-page success confirmation, but does not send or save the request. Connect a form provider or booking backend before using it for real customer requests.
 
 To check the production build locally:
 
