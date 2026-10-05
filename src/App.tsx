@@ -3,7 +3,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { ServicesSection } from './components/ServicesSection';
@@ -17,17 +16,22 @@ import { ArticlesSection } from './components/ArticlesSection';
 import { FaqSection } from './components/FaqSection';
 import { CtaBanner } from './components/CtaBanner';
 import { Footer } from './components/Footer';
-import { BookingModal } from './components/BookingModal';
-import { HealthQuizModal } from './components/HealthQuizModal';
+import { BookingSection } from './components/BookingSection';
+import { HealthQuizSection } from './components/HealthQuizSection';
 
 export default function App() {
-  const [bookingModalOpen, setBookingModalOpen] = useState(false);
-  const [quizModalOpen, setQuizModalOpen] = useState(false);
-  const [selectedSpecialist, setSelectedSpecialist] = useState<string | undefined>(undefined);
+  const handleOpenBooking = () => {
+    const bookingSection = document.getElementById('booking-request');
+    if (bookingSection) {
+      bookingSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 
-  const handleOpenBooking = (specialistId?: string) => {
-    setSelectedSpecialist(specialistId);
-    setBookingModalOpen(true);
+  const handleOpenQuiz = () => {
+    const quizSection = document.getElementById('symptom-checker');
+    if (quizSection) {
+      quizSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   };
 
   const handleExploreServices = () => {
@@ -41,8 +45,8 @@ export default function App() {
     <div className="min-h-screen flex flex-col bg-[#FAFAF7] text-[#191C1E] selection:bg-[#E8EDE7] selection:text-[#1F3323]">
       {/* Top Bar Navigation */}
       <Navbar
-        onOpenBooking={() => handleOpenBooking()}
-        onOpenQuiz={() => setQuizModalOpen(true)}
+        onOpenBooking={handleOpenBooking}
+        onOpenQuiz={handleOpenQuiz}
       />
 
       {/* Main Content Sections */}
@@ -58,10 +62,14 @@ export default function App() {
           onOpenBooking={() => handleOpenBooking()}
         />
 
-        {/* 3. Discover Valence & Standout Live Appointment Scheduler */}
+        {/* 3. About Millennium Plumbing & Service Requests */}
         <SchedulerSection
-          onOpenBooking={() => handleOpenBooking('dr-vance')}
+          onOpenBooking={handleOpenBooking}
         />
+
+        <BookingSection />
+
+        <HealthQuizSection onBookRecommended={handleOpenBooking} />
 
         {/* 4. Infinite Smooth Marquee Ticker with Photographic Cutouts */}
         <MarqueeTicker />
@@ -102,22 +110,6 @@ export default function App() {
         onOpenBooking={() => handleOpenBooking()}
       />
 
-      {/* Interactive Booking Modal */}
-      <BookingModal
-        isOpen={bookingModalOpen}
-        onClose={() => setBookingModalOpen(false)}
-        initialSpecialist={selectedSpecialist}
-      />
-
-      {/* Interactive 2-Min Longevity Assessment Screener */}
-      <HealthQuizModal
-        isOpen={quizModalOpen}
-        onClose={() => setQuizModalOpen(false)}
-        onBookRecommended={() => {
-          setQuizModalOpen(false);
-          setBookingModalOpen(true);
-        }}
-      />
     </div>
   );
 }

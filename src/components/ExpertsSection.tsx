@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { PLUMBER_EXPERTS, PlumberProfile, BUSINESS_INFO } from '../data/content';
-import { ArrowUpRight, Award, ShieldCheck, Wrench, X, PhoneCall } from 'lucide-react';
+import { ArrowUpRight, Award, ShieldCheck, Wrench, PhoneCall } from 'lucide-react';
 import plumbingTechnician from '../assets/images/plumbing_technician_hero_1790679232959.jpg';
 
 interface ExpertsSectionProps {
@@ -72,10 +72,12 @@ export const ExpertsSection: React.FC<ExpertsSectionProps> = ({ onOpenBooking })
             {/* Plumber Items List */}
             <div className="space-y-3.5 pt-2">
               {PLUMBER_EXPERTS.map((plumber) => (
-                <div
+                <button
                   key={plumber.id}
-                  onClick={() => setSelectedPlumber(plumber)}
-                  className="p-4 rounded-2xl bg-white border border-[#E7E7DF] hover:border-[#1B4D3E]/40 hover:shadow-xs transition-all duration-200 cursor-pointer flex items-center justify-between group"
+                  onClick={() => setSelectedPlumber(selectedPlumber?.id === plumber.id ? null : plumber)}
+                  aria-expanded={selectedPlumber?.id === plumber.id}
+                  type="button"
+                  className="w-full text-left p-4 rounded-2xl bg-white border border-[#E7E7DF] hover:border-[#1B4D3E]/40 hover:shadow-xs transition-all duration-200 flex items-center justify-between group"
                 >
                   <div className="flex items-center gap-4">
                     <img
@@ -104,9 +106,70 @@ export const ExpertsSection: React.FC<ExpertsSectionProps> = ({ onOpenBooking })
                       <ArrowUpRight className="w-3.5 h-3.5" />
                     </div>
                   </div>
-                </div>
+                </button>
               ))}
             </div>
+
+            {selectedPlumber && (
+              <div className="p-5 sm:p-6 bg-white rounded-2xl border border-[#E7E7DF]" aria-labelledby="plumber-name">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-center gap-4">
+                    <img
+                      src={selectedPlumber.avatar}
+                      alt={selectedPlumber.name}
+                      className="w-14 h-14 rounded-2xl object-cover ring-2 ring-[#EBF2EC]"
+                    />
+                    <div>
+                      <h3 id="plumber-name" className="font-serif text-xl text-[#191C1E] font-medium">
+                        {selectedPlumber.name}
+                      </h3>
+                      <p className="text-xs font-medium text-[#1B4D3E]">{selectedPlumber.role}</p>
+                      <p className="text-[11px] font-mono text-[#8D928A] mt-0.5">{selectedPlumber.credentials}</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setSelectedPlumber(null)}
+                    type="button"
+                    className="text-xs font-semibold text-[#555C56] underline underline-offset-4 hover:text-[#1B4D3E] shrink-0"
+                  >
+                    Close bio
+                  </button>
+                </div>
+
+                <div className="space-y-4 text-xs sm:text-sm text-[#464B48] leading-relaxed border-t border-[#E7E7DF] pt-4 mt-4">
+                  <div>
+                    <h4 className="font-semibold text-[#191C1E] text-xs uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                      <Wrench className="w-3.5 h-3.5 text-[#1B4D3E]" />
+                      <span>Technical Specialty</span>
+                    </h4>
+                    <p>{selectedPlumber.specialty}</p>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-[#191C1E] text-xs uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                      <Award className="w-3.5 h-3.5 text-[#1B4D3E]" />
+                      <span>Background & Experience</span>
+                    </h4>
+                    <p>{selectedPlumber.bio}</p>
+                  </div>
+                </div>
+                <div className="mt-5 pt-4 border-t border-[#E7E7DF] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                  <a
+                    href={`tel:${BUSINESS_INFO.phoneRaw}`}
+                    className="px-4 py-2 bg-[#EBF2EC] text-[#1B4D3E] text-xs font-semibold rounded-full hover:bg-[#DCE9DF] transition-colors flex items-center gap-1.5"
+                  >
+                    <PhoneCall className="w-3.5 h-3.5" />
+                    <span>Call {BUSINESS_INFO.phone}</span>
+                  </a>
+                  <button
+                    onClick={onOpenBooking}
+                    type="button"
+                    className="px-5 py-2 bg-[#191C1E] hover:bg-[#1B4D3E] text-white text-xs font-semibold rounded-full transition-colors"
+                  >
+                    Prepare a service request
+                  </button>
+                </div>
+              </div>
+            )}
 
             <div className="pt-2">
               <button
@@ -123,83 +186,6 @@ export const ExpertsSection: React.FC<ExpertsSectionProps> = ({ onOpenBooking })
         </div>
       </div>
 
-      {/* Plumber Profile Dialog Modal */}
-      {selectedPlumber && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div
-            className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="plumber-name"
-          >
-            <button
-              onClick={() => setSelectedPlumber(null)}
-              type="button"
-              aria-label="Close dialog"
-              className="absolute top-5 right-5 p-2 rounded-full hover:bg-neutral-100 text-neutral-500 hover:text-neutral-800 transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            <div className="flex items-center gap-4 mb-5">
-              <img
-                src={selectedPlumber.avatar}
-                alt={selectedPlumber.name}
-                className="w-16 h-16 rounded-2xl object-cover ring-2 ring-[#EBF2EC]"
-              />
-              <div>
-                <h3 id="plumber-name" className="font-serif text-2xl text-[#191C1E] font-medium">
-                  {selectedPlumber.name}
-                </h3>
-                <p className="text-xs font-medium text-[#1B4D3E]">
-                  {selectedPlumber.role}
-                </p>
-                <p className="text-[11px] font-mono text-[#8D928A] mt-0.5">
-                  {selectedPlumber.credentials}
-                </p>
-              </div>
-            </div>
-
-            <div className="space-y-4 text-xs sm:text-sm text-[#464B48] leading-relaxed border-t border-[#E7E7DF] pt-4">
-              <div>
-                <h5 className="font-semibold text-[#191C1E] text-xs uppercase tracking-wider mb-1 flex items-center gap-1.5">
-                  <Wrench className="w-3.5 h-3.5 text-[#1B4D3E]" />
-                  <span>Technical Specialty</span>
-                </h5>
-                <p>{selectedPlumber.specialty}</p>
-              </div>
-
-              <div>
-                <h5 className="font-semibold text-[#191C1E] text-xs uppercase tracking-wider mb-1 flex items-center gap-1.5">
-                  <Award className="w-3.5 h-3.5 text-[#1B4D3E]" />
-                  <span>Background & Experience</span>
-                </h5>
-                <p>{selectedPlumber.bio}</p>
-              </div>
-            </div>
-
-            <div className="mt-6 pt-5 border-t border-[#E7E7DF] flex items-center justify-between gap-3">
-              <a
-                href={`tel:${BUSINESS_INFO.phoneRaw}`}
-                className="px-4 py-2 bg-[#EBF2EC] text-[#1B4D3E] text-xs font-semibold rounded-full hover:bg-[#DCE9DF] transition-colors flex items-center gap-1.5"
-              >
-                <PhoneCall className="w-3.5 h-3.5" />
-                <span>Call (678) 412-9962</span>
-              </a>
-              <button
-                onClick={() => {
-                  setSelectedPlumber(null);
-                  onOpenBooking();
-                }}
-                type="button"
-                className="px-5 py-2 bg-[#191C1E] hover:bg-[#1B4D3E] text-white text-xs font-semibold rounded-full transition-colors"
-              >
-                Schedule with {selectedPlumber.name.split(' ')[0]}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </section>
   );
 };

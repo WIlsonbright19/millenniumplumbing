@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { SERVICES, ServiceItem, BUSINESS_INFO } from '../data/content';
-import { ArrowUpRight, Flame, Wrench, Eye, ShieldCheck, Sparkles, AlertCircle, X, CheckCircle2, PhoneCall } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { ArrowUpRight, Flame, Wrench, Eye, ShieldCheck, Sparkles, AlertCircle, CheckCircle2, PhoneCall } from 'lucide-react';
+import { motion } from 'motion/react';
 
 interface ServicesSectionProps {
   onOpenBooking: () => void;
@@ -87,8 +87,9 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ onOpenBooking 
 
               <div className="pt-6 mt-6 border-t border-[#F2F2EE] flex items-center justify-between">
                 <button
-                  onClick={() => setSelectedService(service)}
+                  onClick={() => setSelectedService(selectedService?.id === service.id ? null : service)}
                   type="button"
+                  aria-expanded={selectedService?.id === service.id}
                   className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#191C1E] group-hover:text-[#1B4D3E] transition-colors focus-visible:outline-2 focus-visible:outline-[#1B4D3E]"
                 >
                   <span>View Details & Pricing</span>
@@ -101,101 +102,86 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({ onOpenBooking 
         </div>
       </div>
 
-      {/* Service Detail Modal with Framer Motion AnimatePresence */}
-      <AnimatePresence>
-        {selectedService && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-              className="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto"
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="service-title"
-            >
+      {selectedService && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#E7E7DF]" aria-labelledby="service-title">
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-2 text-xs font-mono uppercase text-[#1B4D3E] mb-2">
+                  <span>Service {selectedService.number}</span>
+                  <span aria-hidden="true">·</span>
+                  <span>Atlanta, GA</span>
+                </div>
+                <h3 id="service-title" className="font-serif text-2xl sm:text-3xl text-[#191C1E] font-medium leading-tight">
+                  {selectedService.title}
+                </h3>
+              </div>
               <button
                 onClick={() => setSelectedService(null)}
                 type="button"
-                aria-label="Close dialog"
-                className="absolute top-5 right-5 p-2 rounded-full hover:bg-neutral-100 text-neutral-500 hover:text-neutral-800 transition-colors focus-visible:outline-2 focus-visible:outline-[#1B4D3E]"
+                className="self-start text-xs font-semibold text-[#555C56] underline underline-offset-4 hover:text-[#1B4D3E]"
               >
-                <X className="w-5 h-5" />
+                Close details
               </button>
+            </div>
 
-              <div className="flex items-center gap-2 text-xs font-mono uppercase text-[#1B4D3E] mb-2">
-                <span>SERVICE {selectedService.number}</span>
-                <span aria-hidden="true">·</span>
-                <span>Atlanta, GA</span>
-              </div>
+            <p className="mt-4 text-sm sm:text-base text-[#464B48] leading-relaxed">
+              {selectedService.fullDesc}
+            </p>
 
-              <h3 id="service-title" className="font-serif text-2xl sm:text-3xl text-[#191C1E] font-medium leading-tight">
-                {selectedService.title}
-              </h3>
-
-              <p className="mt-4 text-sm sm:text-base text-[#464B48] leading-relaxed">
-                {selectedService.fullDesc}
-              </p>
-
-              {/* Key Features & Diagnostic Highlights */}
-              <div className="mt-6 pt-6 border-t border-[#E7E7DF]">
+            <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-6 border-t border-[#E7E7DF] pt-6">
+              <div>
                 <h4 className="text-xs font-semibold uppercase tracking-wider text-[#191C1E] mb-3">
-                  Service Highlights & Capabilities
+                  Service highlights
                 </h4>
                 <ul className="space-y-2">
-                  {selectedService.highlights.map((h, i) => (
-                    <li key={i} className="flex items-start gap-2.5 text-xs sm:text-sm text-[#464B48]">
+                  {selectedService.highlights.map((highlight, index) => (
+                    <li key={index} className="flex items-start gap-2.5 text-xs sm:text-sm text-[#464B48]">
                       <CheckCircle2 className="w-4 h-4 text-[#1B4D3E] shrink-0 mt-0.5" />
-                      <span>{h}</span>
+                      <span>{highlight}</span>
                     </li>
                   ))}
                 </ul>
               </div>
-
-              {/* What is Included / Deliverables */}
-              <div className="mt-6 pt-6 border-t border-[#E7E7DF]">
+              <div>
                 <h4 className="text-xs font-semibold uppercase tracking-wider text-[#191C1E] mb-3">
-                  What You Receive
+                  What you receive
                 </h4>
                 <ul className="space-y-2">
-                  {selectedService.deliverables.map((d, i) => (
-                    <li key={i} className="flex items-start gap-2.5 text-xs sm:text-sm text-[#464B48]">
+                  {selectedService.deliverables.map((deliverable, index) => (
+                    <li key={index} className="flex items-start gap-2.5 text-xs sm:text-sm text-[#464B48]">
                       <CheckCircle2 className="w-4 h-4 text-[#1B4D3E] shrink-0 mt-0.5" />
-                      <span>{d}</span>
+                      <span>{deliverable}</span>
                     </li>
                   ))}
                 </ul>
               </div>
+            </div>
 
-              <div className="mt-8 pt-6 border-t border-[#E7E7DF] flex flex-col sm:flex-row items-center justify-between gap-4">
-                <span className="text-xs text-[#555C56]">
-                  Availability: <strong className="text-[#191C1E]">{selectedService.duration}</strong>
-                </span>
-                <div className="flex items-center gap-2 w-full sm:w-auto">
-                  <a
-                    href={`tel:${BUSINESS_INFO.phoneRaw}`}
-                    className="flex-1 sm:flex-none px-4 py-2.5 bg-[#EBF2EC] hover:bg-[#DCE9DF] text-[#1B4D3E] text-xs font-semibold rounded-full transition-colors flex items-center justify-center gap-1.5"
-                  >
-                    <PhoneCall className="w-3.5 h-3.5" />
-                    <span>Call Now</span>
-                  </a>
-                  <button
-                    onClick={() => {
-                      setSelectedService(null);
-                      onOpenBooking();
-                    }}
-                    type="button"
-                    className="flex-1 sm:flex-none px-6 py-2.5 bg-[#191C1E] hover:bg-[#1B4D3E] text-white text-xs sm:text-sm font-semibold rounded-full transition-colors"
-                  >
-                    Schedule Service
-                  </button>
-                </div>
+            <div className="mt-8 pt-6 border-t border-[#E7E7DF] flex flex-col sm:flex-row items-center justify-between gap-4">
+              <span className="text-xs text-[#555C56]">
+                Availability: <strong className="text-[#191C1E]">{selectedService.duration}</strong>
+              </span>
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <a
+                  href={`tel:${BUSINESS_INFO.phoneRaw}`}
+                  className="flex-1 sm:flex-none px-4 py-2.5 bg-[#EBF2EC] hover:bg-[#DCE9DF] text-[#1B4D3E] text-xs font-semibold rounded-full transition-colors flex items-center justify-center gap-1.5"
+                >
+                  <PhoneCall className="w-3.5 h-3.5" />
+                  <span>Call Now</span>
+                </a>
+                <button
+                  onClick={onOpenBooking}
+                  type="button"
+                  className="flex-1 sm:flex-none px-6 py-2.5 bg-[#191C1E] hover:bg-[#1B4D3E] text-white text-xs sm:text-sm font-semibold rounded-full transition-colors"
+                >
+                  Prepare a service request
+                </button>
               </div>
-            </motion.div>
+            </div>
           </div>
-        )}
-      </AnimatePresence>
+        </div>
+      )}
     </section>
   );
 };

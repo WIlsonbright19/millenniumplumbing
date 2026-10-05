@@ -1,23 +1,17 @@
 import React, { useState } from 'react';
-import { X, Wrench, Check, ArrowRight, ArrowLeft, PhoneCall, AlertTriangle } from 'lucide-react';
+import { Wrench, Check, ArrowRight, ArrowLeft, PhoneCall, AlertTriangle } from 'lucide-react';
 import { BUSINESS_INFO } from '../data/content';
 
-interface HealthQuizModalProps {
-  isOpen: boolean;
-  onClose: () => void;
+interface HealthQuizSectionProps {
   onBookRecommended: (serviceName: string) => void;
 }
 
-export const HealthQuizModal: React.FC<HealthQuizModalProps> = ({
-  isOpen,
-  onClose,
+export const HealthQuizSection: React.FC<HealthQuizSectionProps> = ({
   onBookRecommended
 }) => {
   const [currentQ, setCurrentQ] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [isCompleted, setIsCompleted] = useState(false);
-
-  if (!isOpen) return null;
 
   const questions = [
     {
@@ -98,21 +92,9 @@ export const HealthQuizModal: React.FC<HealthQuizModalProps> = ({
   const recommendation = getRecommendation();
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
-      <div
-        className="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl relative"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="quiz-modal-title"
-      >
-        <button
-          onClick={onClose}
-          type="button"
-          aria-label="Close quiz dialog"
-          className="absolute top-5 right-5 p-2 rounded-full hover:bg-neutral-100 text-neutral-500 hover:text-neutral-800 transition-colors"
-        >
-          <X className="w-5 h-5" />
-        </button>
+    <section id="symptom-checker" className="scroll-mt-24 py-16 sm:py-20 bg-white border-y border-[#E7E7DF]">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6">
+        <div className="bg-[#FAFAF7] rounded-3xl p-6 sm:p-8 border border-[#E1E1D7]">
 
         {!isCompleted ? (
           <div>
@@ -132,9 +114,9 @@ export const HealthQuizModal: React.FC<HealthQuizModalProps> = ({
               )}
             </div>
 
-            <h3 id="quiz-modal-title" className="font-serif text-2xl text-[#191C1E] leading-snug mb-6">
+            <h2 id="quiz-title" className="font-serif text-2xl text-[#191C1E] leading-snug mb-6">
               {questions[currentQ].title}
-            </h3>
+            </h2>
 
             <div className="space-y-3">
               {questions[currentQ].options.map((opt) => (
@@ -195,10 +177,7 @@ export const HealthQuizModal: React.FC<HealthQuizModalProps> = ({
               </a>
               <button
                 type="button"
-                onClick={() => {
-                  onClose();
-                  onBookRecommended(recommendation.service);
-                }}
+                onClick={() => onBookRecommended(recommendation.service)}
                 className="px-5 py-2.5 bg-[#191C1E] hover:bg-[#2A2E2C] text-white rounded-xl text-xs font-medium transition-colors"
               >
                 Prepare Service Request
@@ -206,7 +185,8 @@ export const HealthQuizModal: React.FC<HealthQuizModalProps> = ({
             </div>
           </div>
         )}
+        </div>
       </div>
-    </div>
+    </section>
   );
 };
